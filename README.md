@@ -1,5 +1,5 @@
 # ssh-manager
-使用 golang 的 urfave/cli 实现一个 轻松管理ssh别名配置的命令行工具
+使用 golang 的 cobra 实现一个 轻松管理ssh别名配置的命令行工具
 
 
 
