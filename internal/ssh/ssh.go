@@ -56,21 +56,19 @@ func ListAliases() ([]string, error) {
 // RemoveAlias 删除 SSH 别名
 func RemoveAlias(alias string) error {
 	sshConfigPath := os.Getenv("HOME") + "/.ssh/config"
-	// Replace deprecated ioutil.ReadFile with os.ReadFile
 	content, err := os.ReadFile(sshConfigPath)
 	if err != nil {
 		return fmt.Errorf("failed to read SSH config file: %w", err)
 	}
 
 	// Use a more robust regular expression to match the Host block
-	re := regexp.MustCompile(fmt.Sprintf(`(?m)^\s*Host\s+%s(\s+.*)?\s*$(?s:.*?)(?m)^\s*$`, regexp.QuoteMeta(alias)))
+	re := regexp.MustCompile(fmt.Sprintf(`(?m)^\s*Host\s+%s(\s+.*)?\s*$([^\n]*\n)*`, regexp.QuoteMeta(alias)))
 	newContent := re.ReplaceAllString(string(content), "")
 
 	if string(content) == newContent {
 		return fmt.Errorf("alias '%s' not found", alias)
 	}
 
-	// Replace deprecated ioutil.WriteFile with os.WriteFile
 	err = os.WriteFile(sshConfigPath, []byte(newContent), 0644)
 	if err != nil {
 		return fmt.Errorf("failed to write to SSH config file: %w", err)

@@ -8,26 +8,29 @@ import (
 	"ssh-manager/internal/ssh"
 )
 
+var removeAlias string
+
 var removeCmd = &cobra.Command{
 	Use:   "remove",
 	Short: "Remove an SSH alias",
 	Long:  `Remove an SSH alias from your SSH config file.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) == 0 {
-			fmt.Println("Please provide an alias to remove.")
+		if removeAlias == "" {
+			fmt.Println("Please provide an alias to remove using --alias flag.")
 			os.Exit(1)
 		}
-		alias := args[0]
 
-		if err := ssh.RemoveAlias(alias); err != nil {
+		if err := ssh.RemoveAlias(removeAlias); err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
 
-		fmt.Printf("Removed alias '%s' from SSH config file.\n", alias)
+		fmt.Printf("Removed alias '%s' from SSH config file.\n", removeAlias)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(removeCmd)
+	removeCmd.Flags().StringVarP(&removeAlias, "alias", "a", "", "Alias name to remove (required)")
+	removeCmd.MarkFlagRequired("alias")
 }
